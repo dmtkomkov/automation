@@ -1,0 +1,23 @@
+- hosts: all
+  become: yes
+  become_user: root
+
+  tasks:
+
+  - name: 1. Install MariaDB Server
+    yum: name=mariadb-server state=latest update_cache=yes
+
+  - name: 2. Start Mysql Service
+    service: name=mariadb state=started enabled=true
+
+  - name: 3. Install python Mysql package
+    yum: name=MySQL-python state=present
+
+  - name: 4. Create a new database
+    mysql_db: name=FireGolem state=present collation=utf8_general_ci
+
+  - name: 5. Install Apache
+    yum: name=httpd state=latest
+
+  - name: 6. start Apache
+    service: name=httpd state=started enabled=yes
