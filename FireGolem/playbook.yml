@@ -1,0 +1,60 @@
+- hosts: all
+  become: yes
+  become_user: root
+
+  tasks:
+
+  - name: 1. Install MySQL, Apache and Git
+    yum: name={{item}} state=latest update_cache=yes
+    with_items:
+      - mariadb-server
+      - MySQL-python
+      - httpd
+      - httpd-devel
+      - python-devel
+      - mod_wsgi
+      - git
+
+  - name: 2. Clone repository
+    git:
+      repo: https://github.com/DrNecromant/FireGolem
+      dest: /var/www/FireGolem
+
+  - name: 3. Copy project apache config
+    copy:
+      remote_src: true
+      src: /var/www/FireGolem/httpd/FireGolem.conf
+      dest: /etc/httpd/conf.d/
+
+  - name: 4. Install pip
+    easy_install:
+      name: pip
+      state: latest
+
+  - name: 5. Install project requirements
+    pip:
+      requirements: /var/www/FireGolem/requirements.txt
+
+  - name: 6. Start Services
+    service: name={{item}} state=started enabled=true
+    with_items:
+      - mariadb
+      - httpd
+
+  - name: 7. Create a new database
+    mysql_db: name=FireGolem state=present collation=utf8_general_ci
+
+  - name: 8. Create project DB schema
+    django_manage:
+      command: migrate
+      app_path: /var/www/FireGolem
+
+  - name: 9. Collect project static files
+    django_manage:
+      command: collectstatic
+      app_path: /var/www/FireGolem
+
+  - name: 10. Create project super user
+    django_manage:
+      command: "add_user --user=admin --password=admin"
+      app_path: /var/www/FireGolem
