@@ -26,24 +26,14 @@
       "vm_name": "packer-centos-7-x86_64",
       "shutdown_command": "echo 'packer' | sudo -S shutdown -P now",
       "vboxmanage": [
-        [
-          "modifyvm",
-          "{{.Name}}",
-          "--memory",
-          "2048"
-        ],
-        [
-          "modifyvm",
-          "{{.Name}}",
-          "--cpus",
-          "1"
-        ]
+        ["modifyvm", "{{.Name}}", "--memory", "2048"],
+        ["modifyvm", "{{.Name}}", "--cpus", "1"]
       ]
     }
   ],
   "post-processors": [
     {
-      "output": "builds/{{.Provider}}-centos7.box",
+      "output": "centos7.box",
       "type": "vagrant"
     }
   ]
