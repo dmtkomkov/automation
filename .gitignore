@@ -1,0 +1,7 @@
+# Created by .ignore support plugin (hsz.mobi)
+.gitignore
+.idea/
+centos7/.vagrant/
+centos7/Vagrantfile
+centos7/builds/
+centos7/packer_cache/
