@@ -30,20 +30,19 @@
   - name: 4. Install pip
     easy_install:
       name: pip
-      state: latest
 
   - name: 5. Install project requirements
     pip:
       requirements: /var/www/FireGolem/requirements.txt
 
   - name: 6. Start Services
-    service: name={{item}} state=started enabled=true
+    service: name={{item}} state=restarted enabled=true
     with_items:
       - mariadb
       - httpd
 
   - name: 7. Create a new database
-    mysql_db: name=FireGolem state=present collation=utf8_general_ci
+    mysql_db: name=FireGolem state=present collation=utf8_general_ci encoding=utf8
 
   - name: 8. Create project DB schema
     django_manage:
