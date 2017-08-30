@@ -4,57 +4,40 @@
 
   tasks:
 
-  - name: 1. Install MySQL, Apache and Git
+  - name: 1. Install required packages. MySQL, Apache, Git and WSGI.
     yum: name={{item}} state=latest update_cache=yes
-    with_items:
-      - python-setuptools
-      - mariadb-server
-      - MySQL-python
-      - httpd
-      - httpd-devel
-      - python-devel
-      - mod_wsgi
-      - git
+    with_items: [python-setuptools, mariadb-server, MySQL-python, httpd, httpd-devel, python-devel, mod_wsgi, git]
 
-  - name: 2. Clone repository
-    git:
-      repo: https://github.com/DrNecromant/FireGolem
-      dest: /var/www/FireGolem
+  - name: 2. Clone project repository
+    git: repo=https://github.com/DrNecromant/FireGolem dest=/var/www/FireGolem
 
   - name: 3. Copy project apache config
-    copy:
-      remote_src: true
-      src: /var/www/FireGolem/httpd/FireGolem.conf
-      dest: /etc/httpd/conf.d/
+    copy: remote_src=true src=/var/www/FireGolem/httpd/FireGolem.conf dest=/etc/httpd/conf.d/
 
   - name: 4. Install pip
-    easy_install:
-      name: pip
+    easy_install: name=pip
 
   - name: 5. Install project requirements
-    pip:
-      requirements: /var/www/FireGolem/requirements.txt
+    pip: requirements=/var/www/FireGolem/requirements.txt
 
   - name: 6. Start Services
     service: name={{item}} state=restarted enabled=true
-    with_items:
-      - mariadb
-      - httpd
+    with_items: [mariadb, httpd]
 
   - name: 7. Create a new database
     mysql_db: name=FireGolem state=present collation=utf8_general_ci encoding=utf8
 
   - name: 8. Create project DB schema
-    django_manage:
-      command: migrate
-      app_path: /var/www/FireGolem
+    django_manage: command=migrate app_path=/var/www/FireGolem
 
   - name: 9. Collect project static files
-    django_manage:
-      command: collectstatic
-      app_path: /var/www/FireGolem
+    django_manage: command=collectstatic app_path=/var/www/FireGolem
 
   - name: 10. Create project super user
-    django_manage:
-      command: "add_user --user=admin --password=admin"
-      app_path: /var/www/FireGolem
+    django_manage: command="add_user --user=admin --password=admin" app_path=/var/www/FireGolem
+
+  - name: 11. Dump database
+    mysql_db: name=FireGolem state=dump target=/tmp/FireGolem.sql
+
+  - name: 12. Fetch DB backup.
+    fetch: src=/tmp/FireGolem.sql dest="~/Google Drive/Backups/DBs/" flat=yes fail_on_missing=yes validate_checksum=yes
