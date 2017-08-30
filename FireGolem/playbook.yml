@@ -1,6 +1,10 @@
 - hosts: all
   become: yes
   become_user: root
+  vars:
+    project_root: /var/www/FireGolem
+    project_repo: https://github.com/DrNecromant/FireGolem
+    database_name: FireGolem
 
   tasks:
 
@@ -9,35 +13,35 @@
     with_items: [python-setuptools, mariadb-server, MySQL-python, httpd, httpd-devel, python-devel, mod_wsgi, git]
 
   - name: 2. Clone project repository
-    git: repo=https://github.com/DrNecromant/FireGolem dest=/var/www/FireGolem
+    git: repo={{project_repo}} dest={{project_root}}
 
   - name: 3. Copy project apache config
-    copy: remote_src=true src=/var/www/FireGolem/httpd/FireGolem.conf dest=/etc/httpd/conf.d/
+    copy: remote_src=true src={{project_root}}/httpd/FireGolem.conf dest=/etc/httpd/conf.d/
 
   - name: 4. Install pip
     easy_install: name=pip
 
   - name: 5. Install project requirements
-    pip: requirements=/var/www/FireGolem/requirements.txt
+    pip: requirements={{project_root}}/requirements.txt
 
   - name: 6. Start Services
     service: name={{item}} state=restarted enabled=true
     with_items: [mariadb, httpd]
 
   - name: 7. Create a new database
-    mysql_db: name=FireGolem state=present collation=utf8_general_ci encoding=utf8
+    mysql_db: name={{database_name}} state=present collation=utf8_general_ci encoding=utf8
 
   - name: 8. Create project DB schema
-    django_manage: command=migrate app_path=/var/www/FireGolem
+    django_manage: command=migrate app_path={{project_root}}
 
   - name: 9. Collect project static files
-    django_manage: command=collectstatic app_path=/var/www/FireGolem
+    django_manage: command=collectstatic app_path={{project_root}}
 
   - name: 10. Create project super user
-    django_manage: command="add_user --user=admin --password=admin" app_path=/var/www/FireGolem
+    django_manage: command="add_user --user=admin --password=admin" app_path={{project_root}}
 
   - name: 11. Dump database
-    mysql_db: name=FireGolem state=dump target=/tmp/FireGolem.sql
+    mysql_db: name={{database_name}} state=dump target=/tmp/FireGolem.sql
 
   - name: 12. Fetch DB backup.
     fetch: src=/tmp/FireGolem.sql dest="~/Google Drive/Backups/DBs/" flat=yes fail_on_missing=yes validate_checksum=yes
