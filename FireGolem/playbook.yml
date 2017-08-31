@@ -5,6 +5,7 @@
     project_root: /var/www/FireGolem
     project_repo: https://github.com/DrNecromant/FireGolem
     database_name: FireGolem
+    database_backup: /tmp/FireGolem.sql
 
   tasks:
 
@@ -41,7 +42,10 @@
     django_manage: command="add_user --user=admin --password=admin" app_path={{project_root}}
 
   - name: 11. Dump database
-    mysql_db: name={{database_name}} state=dump target=/tmp/FireGolem.sql
+    mysql_db: name={{database_name}} state=dump target={{database_backup}}
 
-  - name: 12. Fetch DB backup.
-    fetch: src=/tmp/FireGolem.sql dest="~/Google Drive/Backups/DBs/" flat=yes fail_on_missing=yes validate_checksum=yes
+  - name: 12. Compress DB backup
+    archive: path={{database_backup}} dest={{database_backup}}.gz format=gz remove=yes
+
+  - name: 13. Fetch DB backup.
+    fetch: src={{database_backup}}.gz dest="~/Google Drive/Backups/DBs/" flat=yes fail_on_missing=yes validate_checksum=yes
