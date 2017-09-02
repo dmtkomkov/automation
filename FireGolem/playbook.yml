@@ -14,7 +14,7 @@
     with_items: [python-setuptools, mariadb-server, MySQL-python, httpd, httpd-devel, python-devel, mod_wsgi, git]
 
   - name: 2. Clone project repository
-    git: repo={{project_repo}} dest={{project_root}}
+    git: repo={{project_repo}} dest={{project_root}} force=yes
 
   - name: 3. Copy project apache config
     copy: remote_src=true src={{project_root}}/httpd/FireGolem.conf dest=/etc/httpd/conf.d/
