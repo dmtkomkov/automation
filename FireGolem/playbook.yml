@@ -5,7 +5,7 @@
     project_root: /var/www/FireGolem
     project_repo: https://github.com/DrNecromant/FireGolem
     database_name: FireGolem
-    database_backup: /tmp/FireGolem.sql
+    database_backup: /tmp/FireGolem-{{ansible_date_time.iso8601_basic_short}}.sql
 
   tasks:
 
