@@ -6,46 +6,50 @@
     project_repo: https://github.com/DrNecromant/FireGolem
     database_name: FireGolem
     database_backup: /tmp/FireGolem-{{ansible_date_time.iso8601_basic_short}}.sql
+    mysql_root_password: root
 
   tasks:
 
-  - name: 1. Install required packages. MySQL, Apache, Git and WSGI.
+  - name: Install required packages. MySQL, Apache, Git and WSGI.
     yum: name={{item}} state=latest update_cache=yes
     with_items: [python-setuptools, mariadb-server, MySQL-python, httpd, httpd-devel, python-devel, mod_wsgi, git]
 
-  - name: 2. Clone project repository
+  - name: Clone project repository
     git: repo={{project_repo}} dest={{project_root}} force=yes
 
-  - name: 3. Copy project apache config
+  - name: Copy project apache config
     copy: remote_src=true src={{project_root}}/httpd/FireGolem.conf dest=/etc/httpd/conf.d/
 
-  - name: 4. Install pip
+  - name: Install pip
     easy_install: name=pip
 
-  - name: 5. Install project requirements
+  - name: Install project requirements
     pip: requirements={{project_root}}/requirements.txt
 
-  - name: 6. Start Services
+  - name: Start Services
     service: name={{item}} state=restarted enabled=true
     with_items: [mariadb, httpd]
 
-  - name: 7. Create a new database
+  - name: Create a new database
     mysql_db: name={{database_name}} state=present collation=utf8_general_ci encoding=utf8
 
-  - name: 8. Create project DB schema
+  - name: Create project DB schema
     django_manage: command=migrate app_path={{project_root}}
 
-  - name: 9. Collect project static files
+  - name: Populate DB with statuses
+    django_manage: command="loaddata statuses" app_path={{project_root}}
+
+  - name: Collect project static files
     django_manage: command=collectstatic app_path={{project_root}}
 
-  - name: 10. Create project super user
+  - name: Create project super user
     django_manage: command="add_user --user=admin --password=admin" app_path={{project_root}}
 
-  - name: 11. Dump database
+  - name: Dump database
     mysql_db: name={{database_name}} state=dump target={{database_backup}}
 
-  - name: 12. Compress DB backup
+  - name: Compress DB backup
     archive: path={{database_backup}} dest={{database_backup}}.gz format=gz remove=yes
 
-  - name: 13. Fetch DB backup.
+  - name: Fetch DB backup.
     fetch: src={{database_backup}}.gz dest="~/Google Drive/Backups/DBs/" flat=yes fail_on_missing=yes validate_checksum=yes
