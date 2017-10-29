@@ -33,6 +33,9 @@
   - name: Create a new database
     mysql_db: name={{database_name}} state=present collation=utf8_general_ci encoding=utf8
 
+  - name: Create mysql user
+    mysql_user: name=user password=user priv='*.*:ALL,GRANT' state=present
+
   - name: Create project DB schema
     django_manage: command=migrate app_path={{project_root}}
 
