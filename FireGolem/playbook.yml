@@ -5,8 +5,6 @@
     project_root: /var/www/FireGolem
     project_repo: https://github.com/DrNecromant/FireGolem
     database_name: FireGolem
-    database_backup: /tmp/FireGolem-{{ansible_date_time.iso8601_basic_short}}.sql
-    mysql_root_password: root
 
   tasks:
 
@@ -47,12 +45,3 @@
 
   - name: Create project super user
     django_manage: command="add_user --user=admin --password=admin" app_path={{project_root}}
-
-  - name: Dump database
-    mysql_db: name={{database_name}} state=dump target={{database_backup}}
-
-  - name: Compress DB backup
-    archive: path={{database_backup}} dest={{database_backup}}.gz format=gz remove=yes
-
-  - name: Fetch DB backup.
-    fetch: src={{database_backup}}.gz dest="~/Google Drive/Backups/DBs/" flat=yes fail_on_missing=yes validate_checksum=yes
