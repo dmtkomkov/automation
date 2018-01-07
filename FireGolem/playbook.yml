@@ -40,6 +40,9 @@
   - name: Populate DB with statuses
     django_manage: command="loaddata statuses" app_path={{project_root}}
 
+  - name: Populate DB with categories
+    django_manage: command="loaddata categories" app_path={{project_root}}
+
   - name: Collect project static files
     django_manage: command=collectstatic app_path={{project_root}}
 
