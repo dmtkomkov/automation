@@ -37,6 +37,9 @@
   - name: Create project DB schema
     django_manage: command=migrate app_path={{project_root}}
 
+  - name: Create cache tabe
+    django_manage: command=createcachetable app_path={{project_root}}
+
   - name: Populate DB with statuses
     django_manage: command="loaddata statuses" app_path={{project_root}}
 
