@@ -8,9 +8,24 @@
 
   tasks:
 
+  - name: Install EPEL.
+    yum: name=epel-release state=latest update_cache=yes
+
   - name: Install required packages. MySQL, Apache, Git and WSGI.
     yum: name={{item}} state=latest update_cache=yes
-    with_items: [python-setuptools, mariadb-server, MySQL-python, httpd, httpd-devel, python-devel, mod_wsgi, mod_ssl, git]
+    with_items: [
+      python-setuptools,
+      mariadb-server,
+      MySQL-python,
+      httpd,
+      httpd-devel,
+      python-devel,
+      mod_wsgi,
+      mod_ssl,
+      mod_security,
+      mod_evasive,
+      git,
+    ]
 
   - name: Clone project repository
     git: repo={{project_repo}} dest={{project_root}} force=yes
