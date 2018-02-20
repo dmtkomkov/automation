@@ -3,7 +3,7 @@
     {
       "type": "virtualbox-iso",
       "boot_command": [
-        "<tab> text ks=https://raw.githubusercontent.com/DrNecromant/packer/master/centos7/ks.cfg<enter><wait>"
+        "<tab> text ks=https://raw.githubusercontent.com/DrNecromant/automation/master/ks.cfg<enter><wait>"
       ],
       
       "disk_size": 20000,

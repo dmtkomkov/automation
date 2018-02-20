@@ -23,7 +23,7 @@ Vagrant.configure("2") do |config|
   config.ssh.insert_key = false
 
   config.vm.provision "ansible", run: "always" do |ansible|
-    ansible.playbook = "playbook.yml"
+    ansible.playbook = ENV['PLAYBOOK']
   end
 
 end
