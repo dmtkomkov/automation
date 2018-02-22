@@ -33,11 +33,13 @@
 
   - name: Install npm packages
     command: npm install -f
-    args: chdir={{project_root}}
+    args:
+      chdir: "{{project_root}}"
 
   - name: Build project
-    command: npm build
-    args: chdir={{project_root}}
+    command: npm run build
+    args:
+      chdir: "{{project_root}}"
 
   - name: Start Apache
     service: name=httpd state=restarted enabled=true
