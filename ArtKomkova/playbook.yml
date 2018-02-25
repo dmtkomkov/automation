@@ -28,6 +28,13 @@
   - name: Copy project apache config
     copy: remote_src=true src={{project_root}}/src/httpd/ArtKomkova.conf dest=/etc/httpd/conf.d/
 
+  - name: Set hostname
+    lineinfile:
+      path: "/etc/httpd/conf.d/ArtKomkova.conf"
+      regexp: "ServerName"
+      line: "ServerName {{inventory_hostname}}"
+    when: inventory_hostname != "default"
+
   - name: Install angular-cli package globally
     npm: name="@angular/cli" global=yes
 
