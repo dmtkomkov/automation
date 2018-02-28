@@ -33,6 +33,13 @@
   - name: Copy project apache config
     copy: remote_src=true src={{project_root}}/httpd/FireGolem.conf dest=/etc/httpd/conf.d/
 
+  - name: Set hostname
+    lineinfile:
+      path: "/etc/httpd/conf.d/FireGolem.conf"
+      regexp: "ServerName"
+      line: "ServerName {{inventory_hostname}}"
+    when: inventory_hostname != "default"
+
   - name: Install pip
     easy_install: name=pip
 
