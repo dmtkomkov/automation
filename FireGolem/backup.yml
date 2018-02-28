@@ -1,4 +1,4 @@
-- hosts: all
+- hosts: firegolem
   become: yes
   become_user: root
   vars:

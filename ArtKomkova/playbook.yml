@@ -1,4 +1,4 @@
-- hosts: all
+- hosts: artkomkova
   become: yes
   become_user: root
   vars:
