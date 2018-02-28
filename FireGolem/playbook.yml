@@ -37,7 +37,7 @@
     lineinfile:
       path: "/etc/httpd/conf.d/FireGolem.conf"
       regexp: "ServerName"
-      line: "ServerName {{inventory_hostname}}"
+      line: "  ServerName {{inventory_hostname}}"
     when: inventory_hostname != "default"
 
   - name: Install pip
