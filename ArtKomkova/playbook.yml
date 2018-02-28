@@ -26,7 +26,7 @@
     git: repo={{project_repo}} dest={{project_root}} force=yes
 
   - name: Copy project apache config
-    copy: remote_src=true src={{project_root}}/src/httpd/ArtKomkova.conf dest=/etc/httpd/conf.d/
+    copy: remote_src=true src={{project_root}}/httpd/ArtKomkova.conf dest=/etc/httpd/conf.d/
 
   - name: Set hostname
     lineinfile:
