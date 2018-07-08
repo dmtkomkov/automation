@@ -14,7 +14,7 @@
   - name: Install required packages. Node, Apache and Git.
     yum: name={{item}} state=latest update_cache=yes
     with_items: [
-      npm,
+      nodejs,
       httpd,
       mod_ssl,
       mod_security,
