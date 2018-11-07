@@ -4,7 +4,6 @@
   vars:
     project_root: /var/www/ArtKomkova
     project_repo: https://github.com/DrNecromant/ArtKomkova
-    database_name: ArtKomkova
 
   tasks:
 
