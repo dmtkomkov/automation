@@ -1,0 +1,51 @@
+- hosts: artkomkova
+  become: yes
+  become_user: root
+  vars:
+    project_root: /var/www/StormGolem
+    project_repo: https://github.com/DrNecromant/StormGolem
+
+  tasks:
+
+  - name: Install EPEL.
+    yum: name=epel-release state=latest update_cache=yes
+
+  - name: Install required packages. Node, Apache and Git.
+    yum: name={{item}} state=latest update_cache=yes
+    with_items: [
+      nodejs,
+      httpd,
+      mod_ssl,
+      mod_security,
+      mod_evasive,
+      git,
+    ]
+
+  - name: Clone project repository
+    git: repo={{project_repo}} dest={{project_root}} force=yes
+
+  - name: Copy project apache config
+    copy: remote_src=true src={{project_root}}/httpd/StormGolem.conf dest=/etc/httpd/conf.d/
+
+  - name: Set hostname
+    lineinfile:
+      path: "/etc/httpd/conf.d/StormGolem.conf"
+      regexp: "ServerName"
+      line: "  ServerName {{inventory_hostname}}"
+    when: inventory_hostname != "default"
+
+  - name: Install angular-cli package globally
+    npm: name="@angular/cli" global=yes
+
+  - name: Install npm packages
+    command: npm install -f
+    args:
+      chdir: "{{project_root}}"
+
+  - name: Build project
+    command: npm run build
+    args:
+      chdir: "{{project_root}}"
+
+  - name: Start Apache
+    service: name=httpd state=restarted enabled=true
