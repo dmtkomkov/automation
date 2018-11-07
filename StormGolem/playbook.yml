@@ -1,4 +1,4 @@
-- hosts: artkomkova
+- hosts: stormgolem
   become: yes
   become_user: root
   vars:

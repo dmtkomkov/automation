@@ -1,3 +1,4 @@
 - include: FireGolem/playbook.yml
 - include: ArtKomkova/playbook.yml
+- include: StormGolem/playbook.yml
 - include: FireGolem/backup.yml
