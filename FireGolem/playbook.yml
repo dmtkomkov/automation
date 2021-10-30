@@ -8,25 +8,6 @@
 
   tasks:
 
-  - name: Install EPEL.
-    yum: name=epel-release state=latest update_cache=yes
-
-  - name: Install required packages. MySQL, Apache, Git and WSGI.
-    yum: name={{item}} state=latest update_cache=yes
-    with_items: [
-      python-setuptools,
-      mariadb-server,
-      MySQL-python,
-      httpd,
-      httpd-devel,
-      python-devel,
-      mod_wsgi,
-      mod_ssl,
-      mod_security,
-      mod_evasive,
-      git,
-    ]
-
   - name: Clone project repository
     git: repo={{project_repo}} dest={{project_root}} force=yes
 
@@ -40,36 +21,15 @@
       line: "  ServerName {{inventory_hostname}}"
     when: inventory_hostname != "default"
 
-  - name: Install pip
-    easy_install: name=pip
-
-  - name: Install project requirements
-    pip: requirements={{project_root}}/requirements.txt
-
   - name: Start Services
     service: name={{item}} state=restarted enabled=true
     with_items: [mariadb, httpd]
 
-  - name: Create a new database
-    mysql_db: name={{database_name}} state=present collation=utf8_general_ci encoding=utf8
-
-  - name: Create mysql user
-    mysql_user: name=user password=user priv='*.*:ALL,GRANT' state=present
-
-  - name: Create project DB schema
-    django_manage: command=migrate app_path={{project_root}}
-
-  - name: Create cache tabe
+  - name: Create cache table
     django_manage: command=createcachetable app_path={{project_root}}
-
-  - name: Populate DB with statuses
-    django_manage: command="loaddata statuses" app_path={{project_root}}
 
   - name: Populate DB with categories
     django_manage: command="loaddata categories" app_path={{project_root}}
 
   - name: Collect project static files
     django_manage: command=collectstatic app_path={{project_root}}
-
-  - name: Create project super user
-    django_manage: command="add_user --user=admin --password=admin" app_path={{project_root}}
