@@ -13,12 +13,10 @@
   - name: Install required packages. Node, Apache and Git.
     yum: name={{item}} state=latest update_cache=yes
     with_items: [
-      nodejs,
       httpd,
       mod_ssl,
       mod_security,
-      mod_evasive,
-      git,
+      mod_evasive
     ]
 
   - name: Clone project repository
